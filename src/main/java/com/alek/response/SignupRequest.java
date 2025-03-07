@@ -1,8 +1,5 @@
 package com.alek.response;
 
-import lombok.Data;
-
-
 public class SignupRequest {
     private String email;
     private String fullName;

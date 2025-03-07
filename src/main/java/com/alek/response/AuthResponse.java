@@ -1,8 +1,6 @@
 package com.alek.response;
 
 import com.alek.domain.USER_ROLE;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 
 public class AuthResponse {
