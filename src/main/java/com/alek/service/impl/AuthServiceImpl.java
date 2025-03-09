@@ -4,10 +4,14 @@ import com.alek.config.JwtProvider;
 import com.alek.domain.USER_ROLE;
 import com.alek.model.Cart;
 import com.alek.model.User;
+import com.alek.model.VerificationCode;
 import com.alek.repository.CartRepo;
 import com.alek.repository.UserRepo;
+import com.alek.repository.VerificationCodeRepo;
 import com.alek.response.SignupRequest;
 import com.alek.service.AuthService;
+import com.alek.service.EmailService;
+import com.alek.utils.OtpUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,22 +24,65 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class AuthServiceImpl implements AuthService {
+public class AuthServiceImpl implements AuthService  {
 
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final CartRepo cartRepo;
     private final JwtProvider jwtProvider;
+    private final VerificationCodeRepo verificationCodeRepo;
+    private final EmailService emailService;
 
-    public AuthServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder, CartRepo cartRepo, JwtProvider jwtProvider) {
+    public AuthServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder, CartRepo cartRepo, JwtProvider jwtProvider, VerificationCodeRepo verificationCodeRepo, EmailService emailService) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.cartRepo = cartRepo;
         this.jwtProvider = jwtProvider;
+        this.verificationCodeRepo = verificationCodeRepo;
+
+        this.emailService = emailService;
     }
 
     @Override
-    public String createUser(SignupRequest req) {
+    public void sentLoginOtp(String email) throws Exception {
+        String SIGNING_PREFIX = "signing_";
+
+        if (email.startsWith(SIGNING_PREFIX)){
+            email = email.substring(SIGNING_PREFIX.length());
+
+            User user = userRepo.findByEmail(email);
+            if (user == null){
+                throw new Exception("User not exist with provided email");
+            }
+        }
+
+        VerificationCode isExist = verificationCodeRepo.findByEmail(email);
+        if (isExist != null){
+            verificationCodeRepo.delete(isExist);
+        }
+
+        String otp = OtpUtil.generateOtp();
+
+        VerificationCode verificationCode = new VerificationCode();
+        verificationCode.setOtp(otp);
+        verificationCode.setEmail(email);
+
+        verificationCodeRepo.save(verificationCode);
+
+        String subject = "Login OTP";
+        String text = "Your login/signup OTP is " + otp;
+
+        emailService.sendVerificationOtpEmail(email, otp, subject, text);
+
+    }
+
+    @Override
+    public String createUser(SignupRequest req) throws Exception {
+
+        VerificationCode verificationCode = verificationCodeRepo.findByEmail((req.getEmail()));
+        if (verificationCode == null || !verificationCode.getOtp().equals(req.getOtp())){
+            throw new Exception("wrong otp");
+        }
 
         User user = userRepo.findByEmail(req.getEmail());
 
