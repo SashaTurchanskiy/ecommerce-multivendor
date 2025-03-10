@@ -8,19 +8,24 @@ import com.alek.model.VerificationCode;
 import com.alek.repository.CartRepo;
 import com.alek.repository.UserRepo;
 import com.alek.repository.VerificationCodeRepo;
+import com.alek.request.LoginRequest;
+import com.alek.response.AuthResponse;
 import com.alek.response.SignupRequest;
 import com.alek.service.AuthService;
 import com.alek.service.EmailService;
 import com.alek.utils.OtpUtil;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -32,8 +37,9 @@ public class AuthServiceImpl implements AuthService  {
     private final JwtProvider jwtProvider;
     private final VerificationCodeRepo verificationCodeRepo;
     private final EmailService emailService;
+    private final CustomUserServiceImpl customUserService;
 
-    public AuthServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder, CartRepo cartRepo, JwtProvider jwtProvider, VerificationCodeRepo verificationCodeRepo, EmailService emailService) {
+    public AuthServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder, CartRepo cartRepo, JwtProvider jwtProvider, VerificationCodeRepo verificationCodeRepo, EmailService emailService, CustomUserServiceImpl customUserService) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.cartRepo = cartRepo;
@@ -41,6 +47,7 @@ public class AuthServiceImpl implements AuthService  {
         this.verificationCodeRepo = verificationCodeRepo;
 
         this.emailService = emailService;
+        this.customUserService = customUserService;
     }
 
     @Override
@@ -109,5 +116,43 @@ public class AuthServiceImpl implements AuthService  {
 
 
         return jwtProvider.generateToken(authentication);
+    }
+
+    @Override
+    public AuthResponse signing(LoginRequest req) {
+        String username = req.getEmail();
+        String otp = req.getOtp();
+        
+        Authentication authentication = authentication(username, otp);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String token = jwtProvider.generateToken(authentication);
+
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setJwt(token);
+        authResponse.setMessage("login successfully");
+
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        String roleName = authorities.isEmpty()? null: authorities.iterator().next().getAuthority();
+        authResponse.setRole(USER_ROLE.valueOf(roleName));
+        
+        return authResponse;
+    }
+
+    private Authentication authentication(String username, String otp) {
+        UserDetails userDetails = customUserService.loadUserByUsername(username);
+
+        if (userDetails == null){
+            throw new BadCredentialsException("invalid username");
+        }
+
+        VerificationCode verificationCode = verificationCodeRepo.findByEmail(username);
+        if (verificationCode == null || !verificationCode.getOtp().equals(otp)){
+            throw new BadCredentialsException("invalid otp");
+        }
+        return new UsernamePasswordAuthenticationToken(userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
     }
 }

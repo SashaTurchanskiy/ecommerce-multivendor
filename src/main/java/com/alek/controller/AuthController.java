@@ -3,6 +3,7 @@ package com.alek.controller;
 import com.alek.domain.USER_ROLE;
 import com.alek.model.VerificationCode;
 import com.alek.repository.UserRepo;
+import com.alek.request.LoginRequest;
 import com.alek.response.ApiResponse;
 import com.alek.response.AuthResponse;
 import com.alek.response.SignupRequest;
@@ -48,6 +49,15 @@ public class AuthController {
         res.setMessage("otp sent successfully");
 
         return  ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/signing")
+    public ResponseEntity<AuthResponse> loginHandler(
+            @RequestBody LoginRequest request) throws Exception {
+
+        AuthResponse authResponse = authService.signing(request);
+
+        return  ResponseEntity.ok(authResponse);
     }
 
 
