@@ -3,6 +3,7 @@ package com.alek.controller;
 import com.alek.domain.USER_ROLE;
 import com.alek.model.VerificationCode;
 import com.alek.repository.UserRepo;
+import com.alek.request.LoginOtpRequest;
 import com.alek.request.LoginRequest;
 import com.alek.response.ApiResponse;
 import com.alek.response.AuthResponse;
@@ -40,9 +41,9 @@ public class AuthController {
     }
 
     @PostMapping("/sent/login-signup-otp")
-    public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody VerificationCode request) throws Exception {
+    public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody LoginOtpRequest request) throws Exception {
 
-        authService.sentLoginOtp(request.getEmail());
+        authService.sentLoginOtp(request.getEmail(), request.getRole());
 
         ApiResponse res = new ApiResponse();
 

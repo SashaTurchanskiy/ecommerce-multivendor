@@ -10,4 +10,5 @@ public interface VerificationCodeRepo extends JpaRepository<VerificationCode, Lo
     VerificationCode findByEmail(String email);
 
     VerificationCode findByEmail(String email, Sort sort);
+    VerificationCode findByOtp(String otp);
 }
