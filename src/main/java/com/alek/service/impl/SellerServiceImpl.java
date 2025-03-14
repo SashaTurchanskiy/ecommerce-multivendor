@@ -2,6 +2,7 @@ package com.alek.service.impl;
 
 import com.alek.config.JwtProvider;
 import com.alek.domain.AccountStatus;
+import com.alek.exception.SellerException;
 import com.alek.model.Address;
 import com.alek.model.Seller;
 import com.alek.repository.AddressRepo;
@@ -58,8 +59,8 @@ public class SellerServiceImpl implements SellerService {
     }
 
     @Override
-    public Seller getSellerById(Long id) throws Exception {
-        return sellerRepo.findById(id).orElseThrow(()-> new Exception("Seller not found with id: " + id));
+    public Seller getSellerById(Long id) throws SellerException {
+        return sellerRepo.findById(id).orElseThrow(()-> new SellerException("Seller not found with id: " + id));
     }
 
     @Override
