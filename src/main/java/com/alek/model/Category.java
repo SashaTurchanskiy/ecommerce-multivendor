@@ -18,6 +18,7 @@ public class Category {
 
     @NotNull
     @Column(unique = true)
+    @NotNull(message = "Category Id must not be null")
     private String categoryId;
 
     @ManyToOne

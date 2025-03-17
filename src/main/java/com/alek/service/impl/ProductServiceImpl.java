@@ -116,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> searchProduct(String query) {
+    public List<Product> searchProducts(String query) {
         return productRepo.searchProduct(query);
     }
 
