@@ -1,4 +1,4 @@
-package com.alek.model;
+package com.alek.domain;
 
 public enum OrderStatus {
 

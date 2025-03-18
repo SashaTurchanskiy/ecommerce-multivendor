@@ -1,5 +1,6 @@
 package com.alek.model;
 
+import com.alek.domain.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
