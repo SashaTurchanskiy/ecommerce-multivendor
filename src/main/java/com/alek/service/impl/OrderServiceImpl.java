@@ -113,7 +113,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem findById(Long id) throws Exception {
+    public OrderItem getOrderById(Long id) throws Exception {
         return orderItemRepo.findById(id).orElseThrow(() ->
                 new Exception("Order item not exit ... "));
     }

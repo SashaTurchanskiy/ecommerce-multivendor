@@ -1,5 +1,6 @@
 package com.alek.controller;
 
+import com.alek.config.JwtProvider;
 import com.alek.domain.AccountStatus;
 import com.alek.exception.SellerException;
 import com.alek.model.Seller;
@@ -11,6 +12,7 @@ import com.alek.response.ApiResponse;
 import com.alek.response.AuthResponse;
 import com.alek.service.AuthService;
 import com.alek.service.EmailService;
+import com.alek.service.SellerReportService;
 import com.alek.service.SellerService;
 import com.alek.utils.OtpUtil;
 import jakarta.mail.MessagingException;
@@ -28,12 +30,14 @@ public class SellerController {
     private final VerificationCodeRepo verificationCodeRepo;
     private final AuthService authService;
     private final EmailService emailService;
+    private final SellerReportService sellerReportService;
 
-    public SellerController(SellerService sellerService, VerificationCodeRepo verificationCodeRepo, AuthService authService, EmailService emailService) {
+    public SellerController(SellerService sellerService, VerificationCodeRepo verificationCodeRepo, AuthService authService, EmailService emailService, SellerReportService sellerReportService) {
         this.sellerService = sellerService;
         this.verificationCodeRepo = verificationCodeRepo;
         this.authService = authService;
         this.emailService = emailService;
+        this.sellerReportService = sellerReportService;
     }
 
     @PostMapping("/login")
@@ -99,16 +103,16 @@ public class SellerController {
         return new ResponseEntity<>(seller, HttpStatus.OK);
     }
 
-//    @GetMapping("/report")
-//    public ResponseEntity<SellerReport> getSellerReport(
-//            @RequestHeader("Authorization") String jwt) throws Exception {
-//    {
-//     String email =  jwtProvider.getEmailFromJwtToken(jwt);
-//     Seller seller = sellerService.getSellerByEmail(email);
-//     SellerReport report = sellerReportService.getSellerReport(seller);;
-//        return new ResponseEntity<>(report, HttpStatus.OK);
-//    }
+    @GetMapping("/report")
+    public ResponseEntity<SellerReport> getSellerReport(
+            @RequestHeader("Authorization") String jwt) throws Exception {
+        {
+            Seller seller = sellerService.getSellerProfile(jwt);
+            SellerReport report = sellerReportService.getSellerReport(seller);
 
+            return new ResponseEntity<>(report, HttpStatus.OK);
+        }
+    }
     @GetMapping()
     public ResponseEntity<List<Seller>> getAllSellers(
             @RequestParam(required = false) AccountStatus status) {
