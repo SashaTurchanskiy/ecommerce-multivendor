@@ -12,9 +12,9 @@ public interface PaymentService {
     PaymentOrder createOrder(User user, Set<Order> orders);
     PaymentOrder getPaymentOrderById(Long orderId) throws Exception;
     PaymentOrder getPaymentOrderByPaymentId(String orderId) throws Exception;
-//    Boolean ProceedPaymentOrder(PaymentOrder paymentOrder,
-//                                String paymentId,
-//                                String paymentLinkId);
-    String createStripePaymentLink(User user,
+    Boolean ProceedPaymentOrder(PaymentOrder paymentOrder,
+                                String paymentId,
+                                String paymentLinkId) throws StripeException;
+        String createStripePaymentLink(User user,
                                    Long amount, Long orderId) throws StripeException;
 }

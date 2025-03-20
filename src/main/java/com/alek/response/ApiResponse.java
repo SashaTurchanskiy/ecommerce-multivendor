@@ -3,6 +3,7 @@ package com.alek.response;
 public class ApiResponse {
     private String message;
 
+
     public String getMessage() {
         return message;
     }
