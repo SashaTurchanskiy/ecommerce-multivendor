@@ -1,24 +1,27 @@
 package com.alek.controller;
 
-import com.alek.exception.ProductException;
 import com.alek.model.Product;
 import com.alek.model.User;
 import com.alek.model.Wishlist;
 import com.alek.service.ProductService;
 import com.alek.service.UserService;
 import com.alek.service.WishlistService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/wishlist")
 public class WishlistController {
 
     private final WishlistService wishlistService;
     private final UserService userService;
     private final ProductService productService;
+
+    public WishlistController(WishlistService wishlistService, UserService userService, ProductService productService) {
+        this.wishlistService = wishlistService;
+        this.userService = userService;
+        this.productService = productService;
+    }
 
     @GetMapping()
     public ResponseEntity<Wishlist> getWishlistByUserId(

@@ -5,14 +5,16 @@ import com.alek.model.User;
 import com.alek.model.Wishlist;
 import com.alek.repository.WishlistRepo;
 import com.alek.service.WishlistService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class WishlistServiceImpl implements WishlistService {
 
     private final WishlistRepo wishlistRepo;
+
+    public WishlistServiceImpl(WishlistRepo wishlistRepo) {
+        this.wishlistRepo = wishlistRepo;
+    }
 
     @Override
     public Wishlist createWishlist(User user) {
