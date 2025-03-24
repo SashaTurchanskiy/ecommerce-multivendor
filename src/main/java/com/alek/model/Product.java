@@ -112,15 +112,6 @@ public class Product {
     public void setTitle(String title) {
         this.title = title;
     }
-
-    public List<String> getImages() {
-        return images;
-    }
-
-    public void setImages(List<String> images) {
-        this.images = images;
-    }
-
     public int getNumRatings() {
         return numRatings;
     }
@@ -167,5 +158,13 @@ public class Product {
 
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 }

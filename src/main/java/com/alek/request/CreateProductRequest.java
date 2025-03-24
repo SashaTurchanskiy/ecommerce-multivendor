@@ -54,15 +54,6 @@ public class CreateProductRequest {
     public void setColor(String color) {
         this.color = color;
     }
-
-    public List<String> getImages() {
-        return images;
-    }
-
-    public void setImages(List<String> images) {
-        this.images = images;
-    }
-
     public String getCategory() {
         return category;
     }
@@ -93,5 +84,13 @@ public class CreateProductRequest {
 
     public void setSize(String size) {
         this.size = size;
+    }
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 }
