@@ -1,5 +1,6 @@
 package com.alek.service.impl;
 
+import com.alek.exception.DealNotFoundException;
 import com.alek.model.Deal;
 import com.alek.model.HomeCategory;
 import com.alek.repository.DealRepo;
@@ -48,13 +49,13 @@ public class DealServiceImpl implements DealService {
             }
             return dealRepo.save(existingDeal);
         }
-        throw new Exception("Deal not found");
+        throw new DealNotFoundException("Deal not found");
     }
 
     @Override
     public void deleteDeal(Long id) throws Exception {
         Deal deal = dealRepo.findById(id).orElseThrow(() ->
-                new Exception("Deal not found"));
+                new DealNotFoundException("Deal not found"));
         dealRepo.delete(deal);
 
     }

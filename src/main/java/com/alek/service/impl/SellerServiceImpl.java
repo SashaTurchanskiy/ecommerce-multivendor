@@ -3,6 +3,7 @@ package com.alek.service.impl;
 import com.alek.config.JwtProvider;
 import com.alek.domain.AccountStatus;
 import com.alek.exception.SellerException;
+import com.alek.exception.SellerNotFoundException;
 import com.alek.model.Address;
 import com.alek.model.Seller;
 import com.alek.repository.AddressRepo;
@@ -68,7 +69,7 @@ public class SellerServiceImpl implements SellerService {
         Seller seller = sellerRepo.findByEmail(email);
 
         if (seller == null) {
-            throw new Exception("Seller not found with email: " + email);
+            throw new SellerNotFoundException("Seller not found with email: " + email);
         }
         return seller;
     }

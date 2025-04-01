@@ -1,5 +1,7 @@
 package com.alek.service.impl;
 
+import com.alek.exception.AllowedException;
+import com.alek.exception.ReviewNotFoundException;
 import com.alek.model.Product;
 import com.alek.model.Review;
 import com.alek.model.User;
@@ -45,7 +47,7 @@ public class ReviewServiceImpl implements ReviewService {
            review.setRating(rating);
            return reviewRepo.save(review);
        }
-         throw new Exception("You are not allowed to update this review");
+         throw new AllowedException("You are not allowed to update this review");
     }
 
     @Override
@@ -53,7 +55,7 @@ public class ReviewServiceImpl implements ReviewService {
     Review review = getReviewById(reviewId);
 
     if (review.getUser().getId().equals(userId)){
-        throw new Exception("You are not allowed to delete this review");
+        throw new AllowedException("You are not allowed to delete this review");
     }
     reviewRepo.delete(review);
 
@@ -62,6 +64,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Review getReviewById(Long reviewId) throws Exception {
         return reviewRepo.findById(reviewId).orElseThrow(()->
-                new Exception("review not found"));
+                new ReviewNotFoundException("review not found"));
     }
 }

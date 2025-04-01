@@ -1,5 +1,6 @@
 package com.alek.service.impl;
 
+import com.alek.exception.CategoryNotFoundException;
 import com.alek.model.HomeCategory;
 import com.alek.repository.HomeCategoryRepo;
 import com.alek.service.HomeCategoryService;
@@ -32,7 +33,7 @@ public class HomeCategoryServiceImpl implements HomeCategoryService {
     @Override
     public HomeCategory updateHomeCategory(Long id, HomeCategory homeCategory) throws Exception {
         HomeCategory existingCategory = homeCategoryRepo.findById(id)
-                .orElseThrow(()-> new Exception("Category not found"));
+                .orElseThrow(()-> new CategoryNotFoundException("Category not found"));
         if (homeCategory.getName()!=null){
             existingCategory.setImage(homeCategory.getImage());
         }

@@ -1,5 +1,6 @@
 package com.alek.service.impl;
 
+import com.alek.exception.CartItemException;
 import com.alek.model.CartItem;
 import com.alek.model.User;
 import com.alek.repository.CartItemRepo;
@@ -29,7 +30,7 @@ public class CartItemServiceImpl implements CartItemService {
             return cartItemRepo.save(item);
         }
 
-        throw new Exception("You cant update this cart item");
+        throw new CartItemException("You cant update this cart item");
     }
 
     @Override
@@ -41,13 +42,13 @@ public class CartItemServiceImpl implements CartItemService {
         if (cartItemUser.getId().equals(userId)){
             cartItemRepo.delete(item);
         }
-        else throw new Exception("You cant delete this cart item");
+        else throw new CartItemException("You cant delete this cart item");
 
     }
 
     @Override
     public CartItem findCartItemById(Long id) throws Exception {
         return cartItemRepo.findById(id).orElseThrow(()->
-                new Exception("Cart item not found with id " + id));
+                new CartItemException("Cart item not found with id " + id));
     }
 }

@@ -1,6 +1,9 @@
 package com.alek.controller;
 
 import com.alek.domain.USER_ROLE;
+import com.alek.exception.SellerNotFoundException;
+import com.alek.exception.UserNotFoundException;
+import com.alek.exception.WrongOtpException;
 import com.alek.model.VerificationCode;
 import com.alek.repository.UserRepo;
 import com.alek.request.LoginOtpRequest;
@@ -28,7 +31,7 @@ public class AuthController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> createUserHandler(@RequestBody SignupRequest request) throws Exception {
+    public ResponseEntity<AuthResponse> createUserHandler(@RequestBody SignupRequest request) throws Exception, WrongOtpException {
 
         String jwt = authService.createUser(request);
 
@@ -41,7 +44,7 @@ public class AuthController {
     }
 
     @PostMapping("/sent/login-signup-otp")
-    public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody LoginOtpRequest request) throws Exception {
+    public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody LoginOtpRequest request) throws Exception, UserNotFoundException, SellerNotFoundException {
 
         authService.sentLoginOtp(request.getEmail(), request.getRole());
 
@@ -54,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/signing")
     public ResponseEntity<AuthResponse> loginHandler(
-            @RequestBody LoginRequest request) throws Exception {
+            @RequestBody LoginRequest request) throws Exception, WrongOtpException {
 
         AuthResponse authResponse = authService.signing(request);
 

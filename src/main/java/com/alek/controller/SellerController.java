@@ -3,6 +3,7 @@ package com.alek.controller;
 import com.alek.config.JwtProvider;
 import com.alek.domain.AccountStatus;
 import com.alek.exception.SellerException;
+import com.alek.exception.WrongOtpException;
 import com.alek.model.Seller;
 import com.alek.model.SellerReport;
 import com.alek.model.VerificationCode;
@@ -43,7 +44,7 @@ public class SellerController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> loginSeller(
             @RequestBody LoginRequest req
-            ) throws Exception {
+            ) throws Exception, WrongOtpException {
 
         String otp = req.getOtp();
         String email = req.getEmail();

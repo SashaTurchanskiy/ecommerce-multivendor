@@ -1,6 +1,8 @@
 package com.alek.service.impl;
 
 import com.alek.domain.OrderStatus;
+import com.alek.exception.OrderException;
+import com.alek.exception.OrderNotFoundException;
 import com.alek.model.*;
 import com.alek.repository.AddressRepo;
 import com.alek.repository.OrderItemRepo;
@@ -82,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order findOrderById(Long id) throws Exception {
         return orderRepo.findById(id).orElseThrow(()->
-                new Exception("Order not found with id " + id));
+                new OrderNotFoundException("Order not found with id " + id));
     }
 
     @Override
@@ -106,7 +108,7 @@ public class OrderServiceImpl implements OrderService {
     public Order cancelOrder(Long orderId, User user) throws Exception {
         Order order = findOrderById(orderId);
         if (!user.getId().equals(order.getUser().getId())){
-            throw new Exception("You dont have permission to cancel this order");
+            throw new OrderException("You dont have permission to cancel this order");
         }
         order.setOrderStatus(OrderStatus.CANCELLED);
         return orderRepo.save(order);
@@ -115,6 +117,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderItem getOrderById(Long id) throws Exception {
         return orderItemRepo.findById(id).orElseThrow(() ->
-                new Exception("Order item not exit ... "));
+                new OrderException("Order item not exit ... "));
     }
 }

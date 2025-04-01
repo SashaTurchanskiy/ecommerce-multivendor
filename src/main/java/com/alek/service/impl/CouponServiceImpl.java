@@ -1,5 +1,6 @@
 package com.alek.service.impl;
 
+import com.alek.exception.CouponException;
 import com.alek.model.Cart;
 import com.alek.model.Coupon;
 import com.alek.model.User;
@@ -33,13 +34,13 @@ public class CouponServiceImpl implements CouponService {
         Cart cart = cartRepo.findByUserId(user.getId());
 
         if (coupon == null){
-            throw new Exception("Coupon not valid");
+            throw new CouponException("Coupon not valid");
         }
         if (user.getUsedCoupons().contains(coupon)){
-            throw new Exception("Coupon already used");
+            throw new CouponException("Coupon already used");
         }
         if (orderValue < coupon.getMinimumOrderValue()){
-            throw new Exception("Order value too low " + coupon.getMinimumOrderValue());
+            throw new CouponException("Order value too low " + coupon.getMinimumOrderValue());
         }
         if (coupon.isActive() && LocalDate.now().isAfter(coupon.getValidityStartDate()) && LocalDate.now().isBefore(coupon.getValidityEndDate()))
         {
@@ -54,7 +55,7 @@ public class CouponServiceImpl implements CouponService {
 
         return cart;
         }
-        throw new Exception("Coupon not valid");
+        throw new CouponException("Coupon not valid");
     }
 
     @Override
@@ -62,7 +63,7 @@ public class CouponServiceImpl implements CouponService {
         Coupon coupon = couponRepo.findByCode(code);
 
         if (coupon == null){
-            throw new Exception("Coupon not found");
+            throw new CouponException("Coupon not found");
         }
         Cart cart = cartRepo.findByUserId(user.getId());
         double discountPrice = (cart.getTotalSellingPrice() * coupon.getDiscountPercentage())/100;
@@ -76,7 +77,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public Coupon findCouponById(Long id) throws Exception {
         return couponRepo.findById(id).orElseThrow(()->
-                new Exception("Coupon not found"));
+                new CouponException("Coupon not found"));
 
 
     }

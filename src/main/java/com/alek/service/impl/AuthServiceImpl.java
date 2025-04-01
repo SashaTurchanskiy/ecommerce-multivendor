@@ -2,6 +2,9 @@ package com.alek.service.impl;
 
 import com.alek.config.JwtProvider;
 import com.alek.domain.USER_ROLE;
+import com.alek.exception.SellerNotFoundException;
+import com.alek.exception.UserNotFoundException;
+import com.alek.exception.WrongOtpException;
 import com.alek.model.Cart;
 import com.alek.model.Seller;
 import com.alek.model.User;
@@ -16,6 +19,7 @@ import com.alek.response.SignupRequest;
 import com.alek.service.AuthService;
 import com.alek.service.EmailService;
 import com.alek.utils.OtpUtil;
+import jakarta.mail.MessagingException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -55,7 +59,7 @@ public class AuthServiceImpl implements AuthService  {
     }
 
     @Override
-    public void sentLoginOtp(String email, USER_ROLE role) throws Exception {
+    public void sentLoginOtp(String email, USER_ROLE role) throws Exception,UserNotFoundException, SellerNotFoundException  {
         String SIGNING_PREFIX = "signing_";
 
 
@@ -65,12 +69,12 @@ public class AuthServiceImpl implements AuthService  {
             if (role.equals(USER_ROLE.ROLE_SELLER)) {
                 Seller seller = sellerRepo.findByEmail(email);
                 if (seller == null) {
-                    throw new Exception("Seller not found with provided email");
+                    throw new SellerNotFoundException("Seller not found with provided email");
                 }
             } else {
                 User user = userRepo.findByEmail(email);
                 if (user == null) {
-                    throw new Exception("User not exist with provided email");
+                    throw new UserNotFoundException("User not exist with provided email");
                 }
             }
         }
@@ -96,11 +100,11 @@ public class AuthServiceImpl implements AuthService  {
 
 
     @Override
-    public String createUser(SignupRequest req) throws Exception {
+    public String createUser(SignupRequest req) throws  WrongOtpException {
 
         VerificationCode verificationCode = verificationCodeRepo.findByEmail((req.getEmail()));
         if (verificationCode == null || !verificationCode.getOtp().equals(req.getOtp())){
-            throw new Exception("wrong otp");
+            throw new WrongOtpException("wrong otp");
         }
 
         User user = userRepo.findByEmail(req.getEmail());
@@ -131,7 +135,7 @@ public class AuthServiceImpl implements AuthService  {
     }
 
     @Override
-    public AuthResponse signing(LoginRequest req) throws Exception {
+    public AuthResponse signing(LoginRequest req) throws  WrongOtpException {
         String username = req.getEmail();
         String otp = req.getOtp();
         
@@ -151,7 +155,7 @@ public class AuthServiceImpl implements AuthService  {
         return authResponse;
     }
 
-    private Authentication authentication(String username, String otp) throws Exception {
+    private Authentication authentication(String username, String otp) throws WrongOtpException {
         UserDetails userDetails = customUserService.loadUserByUsername(username);
 
         String SELLER_PREFIX = "seller_";
@@ -166,7 +170,7 @@ public class AuthServiceImpl implements AuthService  {
 
         VerificationCode verificationCode = verificationCodeRepo.findByEmail(username);
         if (verificationCode == null || !verificationCode.getOtp().equals(otp)){
-            throw new Exception("invalid otp");
+            throw new WrongOtpException("invalid otp");
         }
         return new UsernamePasswordAuthenticationToken(userDetails,
                 null,

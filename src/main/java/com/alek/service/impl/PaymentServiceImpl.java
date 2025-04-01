@@ -1,6 +1,7 @@
 package com.alek.service.impl;
 
 import com.alek.domain.PaymentOrderStatus;
+import com.alek.exception.PaymentOrderNotFoundException;
 import com.alek.model.Order;
 import com.alek.model.PaymentOrder;
 import com.alek.model.PaymentStatus;
@@ -52,7 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentOrder getPaymentOrderById(Long orderId) throws Exception {
         return paymentOrderRepo.findById(orderId).orElseThrow(()->
-                new Exception("Payment order not found"));
+                new PaymentOrderNotFoundException("Payment order not found"));
     }
 
     @Override
@@ -60,7 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentOrder paymentOrder = paymentOrderRepo.findByPaymentLinkId(orderId);
 
         if (paymentOrder == null){
-            throw new Exception("Payment order not found with provided payment link");
+            throw new PaymentOrderNotFoundException("Payment order not found with provided payment link");
         }
         return paymentOrder;
     }

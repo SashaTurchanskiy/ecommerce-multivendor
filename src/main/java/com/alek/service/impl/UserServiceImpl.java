@@ -1,6 +1,7 @@
 package com.alek.service.impl;
 
 import com.alek.config.JwtProvider;
+import com.alek.exception.UserNotFoundException;
 import com.alek.model.User;
 import com.alek.repository.UserRepo;
 import com.alek.service.UserService;
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
     public User findUserByEmail(String email) throws Exception {
         User user = userRepo.findByEmail(email);
         if (user == null){
-            throw new Exception("User not found " + email);
+            throw new UserNotFoundException("User not found " + email);
         }
 
         return user;
